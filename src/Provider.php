@@ -31,9 +31,9 @@ class Provider implements OpenFeatureProvider
     /**
      * Instantiate a new instance of this provider, backed by the provided LDClient instance.
      */
-    public function __construct(LDClient $client)
+    public function __construct(LDClient $client, ?LoggerInterface $logger = null)
     {
-        $this->logger = new NullLogger();
+        $this->logger = $logger ?? new NullLogger();
 
         $this->client = $client;
         $this->contextConverter = new EvaluationContextConverter($this->logger);
@@ -51,6 +51,7 @@ class Provider implements OpenFeatureProvider
     public function setLogger(LoggerInterface $logger): void
     {
         $this->logger = $logger;
+        $this->contextConverter->setLogger($logger);
     }
 
     public function getHooks(): array

@@ -24,6 +24,14 @@ class EvaluationContextConverter
     }
 
     /**
+     * Sets a logger instance on the object.
+     */
+    public function setLogger(LoggerInterface $logger): void
+    {
+        $this->logger = $logger;
+    }
+
+    /**
      * Create an LDContext from an EvaluationContext.
      *
      * A context will always be created, but the created context may be invalid.

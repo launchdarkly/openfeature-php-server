@@ -8,11 +8,13 @@ use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\LDClient;
 use LaunchDarkly\OpenFeature\Provider;
+use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\interfaces\provider\ErrorCode;
 use OpenFeature\interfaces\provider\Reason;
 use OpenFeature\interfaces\provider\ResolutionError;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 class ProviderTest extends TestCase
 {
@@ -147,5 +149,31 @@ class ProviderTest extends TestCase
         $resolutionDetails = $provider->{$methodName}("flag-key", $defaultValue, new EvaluationContext("user-key"));
 
         $this->assertEquals($expectedValue, $resolutionDetails->getValue());
+    }
+
+    public function testLoggerChangesShouldCascadeToEvaluationConverter(): void
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('warning')
+            ->with($this->equalTo("'kind' was set to non-string value; defaulting to user"));
+
+        $detail = new EvaluationDetail(true, 1, EvaluationReason::fallthrough());
+
+        $client = $this->createMock(LDClient::class);
+        $client->expects($this->any())
+            ->method('variationDetail')
+            ->willReturn($detail);
+
+        $provider = new Provider($client, $logger);
+        $context = new EvaluationContext("user-key", new Attributes(['kind' => false]));
+        $provider->resolveBooleanValue("flag-key", false, $context);
+
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())
+            ->method('warning')
+            ->with($this->equalTo("'kind' was set to non-string value; defaulting to user"));
+        $provider->setLogger($logger);
+        $provider->resolveBooleanValue("flag-key", false, $context);
     }
 }
