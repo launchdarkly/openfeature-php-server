@@ -1,0 +1,64 @@
+version: 2.1
+
+orbs:
+  win: circleci/windows@2.2.0
+
+workflows:
+  workflow:
+    jobs:
+      - test-on-linux:
+          matrix:
+              parameters:
+                  php-version: ["8.0", "8.1"]
+                  composer-dependencies: ["lowest", "highest"]
+      - test-on-windows
+
+jobs:
+  test-on-windows:
+    executor:
+      name: win/default
+      shell: powershell.exe
+
+    steps:
+      - checkout
+      - run:
+          name: install php
+          command: choco install -y php composer
+      - run:
+          name: install dependencies
+          command: composer install --no-progress
+      - run:
+          name: run tests
+          command: .\vendor\bin\phpunit
+
+  test-on-linux:
+    parameters:
+      php-version:
+        type: string
+      composer-dependencies:
+        type: string
+
+    docker:
+      - image: cimg/php:<<parameters.php-version>>
+
+    steps:
+      - setup_remote_docker
+      - checkout
+
+      - run:
+          name: validate composer.json
+          command: composer validate
+      - run:
+          name: install dependencies
+          command: composer install --no-progress
+      - when:
+          condition:
+            equal: [ <<parameters.composer-dependencies>>, "lowest" ]
+          steps:
+            - run:
+                name: downgrade to lowest versions
+                command: composer update --prefer-lowest --prefer-stable
+
+      - run:
+          name: run quality control checks
+          command: make check
