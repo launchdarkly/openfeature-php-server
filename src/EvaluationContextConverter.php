@@ -62,11 +62,11 @@ class EvaluationContextConverter
         if ($targetingKey !== null && $targetingKey !== "" && is_string($key)) {
             // There is both a targeting key and a key. It will work, but probably
             // is not intentional.
-            // logger.warn("EvaluationContext contained both a 'key' and 'targetingKey'.");
+            $this->logger->warning("EvaluationContext contained both a 'key' and 'targetingKey'.");
         }
 
         if ($key !== null && !is_string($key)) {
-            // logger.warn("A non-string 'key' attribute was provided.");
+            $this->logger->warning("A non-string 'key' attribute was provided.");
         }
 
         if ($key !== null && is_string($key)) {
@@ -75,7 +75,7 @@ class EvaluationContextConverter
         }
 
         if ($targetingKey === null || $targetingKey === "") {
-            // logger.error("The EvaluationContext must contain either a 'targetingKey' or a 'key' and the type " + "must be a string.");
+            $this->logger->error("The EvaluationContext must contain either a 'targetingKey' or a 'key' and the type must be a string.");
         }
 
         return $targetingKey ?? "";
@@ -92,7 +92,7 @@ class EvaluationContextConverter
 
             if (!is_array($attributes)) {
                 // The attributes need to be a structure to be part of a multi-context.
-                // logger.warn("Top level attributes in a multi-kind context should be Structure types.");
+                $this->logger->warning("Top level attributes in a multi-kind context should be Structure types.");
                 continue;
             }
 
