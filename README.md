@@ -1,5 +1,9 @@
 # LaunchDarkly OpenFeature provider for the Server-Side SDK for PHP
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/launchdarkly/openfeature-php-server/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/launchdarkly/openfeature-php-server/tree/main)
+[![Packagist](https://img.shields.io/packagist/v/launchdarkly/openfeature-server.svg?style=flat-square)](https://packagist.org/packages/launchdarkly/openfeature-server)
+[![Documentation](https://img.shields.io/static/v1?label=GitHub+Pages&message=API+reference&color=00add8)](https://launchdarkly.github.io/openfeature-php-server)
+
 This provider allows for using LaunchDarkly with the OpenFeature SDK for PHP.
 
 This provider is designed primarily for use in multi-user systems such as web servers and applications. It follows the server-side LaunchDarkly model for multi-user contexts. It is not intended for use in desktop and embedded systems applications.
