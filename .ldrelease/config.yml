@@ -1,7 +1,7 @@
 version: 2
 
 publications:
-  - url: https://packagist.org/packages/launchdarkly/openfeature-server-sdk
+  - url: https://packagist.org/packages/launchdarkly/openfeature-server
     description: Packagist
 
 branches:
