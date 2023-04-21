@@ -22,18 +22,22 @@
     "require": {
         "php": ">=8.0",
         "guzzlehttp/guzzle": "^7",
-        "open-feature/sdk": "^2.0",
-        "launchdarkly/server-sdk": "^5.1"
+        "launchdarkly/server-sdk": "^5.1",
+        "myclabs/php-enum": ">1.8",
+        "open-feature/sdk": "^2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9",
+        "friendsofphp/php-cs-fixer": "^3.16",
         "phpstan/phpstan": "^1.10",
-        "friendsofphp/php-cs-fixer": "^3.16"
+        "phpunit/phpunit": "^9.6"
     },
     "scripts": {
         "phpunit": "vendor/bin/phpunit",
         "phpstan": "vendor/bin/phpstan analyse --level 8 --no-progress src tests",
         "cs-check": "vendor/bin/php-cs-fixer fix --diff --dry-run --verbose --config=.php-cs-fixer.php",
         "cs-fix": "vendor/bin/php-cs-fixer fix --diff --verbose --config=.php-cs-fixer.php"
+    },
+    "config": {
+        "sort-packages": true
     }
 }
