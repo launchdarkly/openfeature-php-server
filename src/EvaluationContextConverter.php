@@ -135,17 +135,14 @@ class EvaluationContextConverter
                 continue;
             }
 
-            // Validation for name
             if ($k === "name" && is_string($v)) {
                 $builder->name($v);
             } elseif ($k === "name") {
                 $this->logger->error("The attribute 'name' must be a string");
-            // Validation for anonymous
             } elseif ($k === "anonymous" && is_bool($v)) {
                 $builder->anonymous($v);
             } elseif ($k === "anonymous") {
                 $this->logger->error("The attribute 'anonymous' must be a boolean");
-            // Validation for privateAttributes
             } elseif ($k === "privateAttributes" && is_array($v)) {
                 $privateAttributes = array_values($v);
                 foreach ($privateAttributes as $privateAttribute) {
@@ -158,8 +155,8 @@ class EvaluationContextConverter
                 }
             } elseif ($k === "privateAttributes") {
                 $this->logger->error("'privateAttributes' in an evaluation context must be an array");
-            // Catch all for remaining attributes
             } else {
+                // Catch all for remaining attributes
                 $builder->set($k, $v);
             }
         }
