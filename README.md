@@ -1,6 +1,6 @@
 # LaunchDarkly OpenFeature provider for the Server-Side SDK for PHP
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/launchdarkly/openfeature-php-server/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/launchdarkly/openfeature-php-server/tree/main)
+[![Run CI](https://github.com/launchdarkly/openfeature-php-server/actions/workflows/ci.yml/badge.svg)](https://github.com/launchdarkly/openfeature-php-server/actions/workflows/ci.yml)
 [![Packagist](https://img.shields.io/packagist/v/launchdarkly/openfeature-server.svg?style=flat-square)](https://packagist.org/packages/launchdarkly/openfeature-server)
 [![Documentation](https://img.shields.io/static/v1?label=GitHub+Pages&message=API+reference&color=00add8)](https://launchdarkly.github.io/openfeature-php-server)
 
