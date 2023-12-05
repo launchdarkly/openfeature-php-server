@@ -1,0 +1,29 @@
+name: CI Workflow
+description: 'Shared CI workflow.'
+inputs:
+  php-version:
+    description: 'Which version of PHP should we setup?'
+    required: false
+    default: 8.0
+  token:
+    description: 'Token used to prevent composer rate limiting'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup PHP
+      uses: shivammathur/setup-php@e6f75134d35752277f093989e72e140eaa222f35
+      with:
+        php-version: ${{ inputs.php-version }}
+        tools: phpdoc:3.1.2
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+
+    - name: Install dependencies
+      shell: bash
+      run: composer install --no-progress
+
+    - name: Run quality control checks
+      shell: bash
+      run: make check

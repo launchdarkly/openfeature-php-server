@@ -1,0 +1,58 @@
+name: Run CI
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md' # Do not need to run CI for markdown changes.
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-versions: [8.0, 8.1]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # If you only need the current version keep this.
+
+      - uses: ./.github/actions/ci
+        with:
+          php-version: ${{ matrix.php-version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  windows-build:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        php-version: [8.0.30, 8.1.26]
+
+    env:
+      LD_INCLUDE_INTEGRATION_TESTS: 1
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # If you only need the current version keep this.
+
+      - name: Install php support
+        run: choco install -y php --version=${{ matrix.php-version }} --force
+
+      - name: Install composer
+        run: choco install -y composer
+
+      # Installation must prefer source as the current open-feature/php-sdk
+      # includes a symlink which 7z does not want to unzip. Once this is
+      # fixed upstream, we can remove the source requirement.
+      - name: Install dependencies
+        run: composer install --no-progress --prefer-source
+
+      - name: Run tests
+        run: .\vendor\bin\phpunit
