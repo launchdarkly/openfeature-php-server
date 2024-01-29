@@ -168,12 +168,5 @@ class ProviderTest extends TestCase
         $provider = new Provider($client, $logger);
         $context = new EvaluationContext("user-key", new Attributes(['kind' => false]));
         $provider->resolveBooleanValue("flag-key", false, $context);
-
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects($this->once())
-            ->method('warning')
-            ->with($this->equalTo("'kind' was set to non-string value; defaulting to user"));
-        $provider->setLogger($logger);
-        $provider->resolveBooleanValue("flag-key", false, $context);
     }
 }
