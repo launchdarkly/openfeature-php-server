@@ -26,17 +26,18 @@ class Provider implements OpenFeatureProvider
     private LDClient $client;
     private EvaluationContextConverter $contextConverter;
     private ResolutionDetailsConverter $detailsConverter;
-    private LoggerInterface $logger;
 
     /**
      * Instantiate a new instance of this provider, backed by the provided LDClient instance.
+     *
+     * @params string $sdkKey The SDK key to use when connecting to LaunchDarkly.
+     * @param array<string,mixed> $options These options are passed directly
+     * to the underlying {@link https://launchdarkly.github.io/php-server-sdk/classes/LaunchDarkly-LDClient.html#method___construct LDClient constructor}.
      */
-    public function __construct(LDClient $client, ?LoggerInterface $logger = null)
+    public function __construct(string $sdkKey, array $options = [])
     {
-        $this->logger = $logger ?? new NullLogger();
-
-        $this->client = $client;
-        $this->contextConverter = new EvaluationContextConverter($this->logger);
+        $this->client = new LDClient($sdkKey, $options);
+        $this->contextConverter = new EvaluationContextConverter($options['logger'] ?? new NullLogger());
         $this->detailsConverter = new ResolutionDetailsConverter();
     }
 
@@ -47,10 +48,18 @@ class Provider implements OpenFeatureProvider
 
     /**
      * Sets a logger instance on the object.
+     *
+     * NOTE: Changing the logger in this way will affect the logger used by the
+     * EvaluationContextConverter. However, it will not affect the logger used
+     * by the underlyling LDClient instance.
+     *
+     * If this functionality is important to you, please reach out to your
+     * LaunchDarkly support contact, or open an issue on the {@link
+     * https://github.com/launchdarkly/openfeature-php-server GitHub
+     * repository} for this library.
      */
     public function setLogger(LoggerInterface $logger): void
     {
-        $this->logger = $logger;
         $this->contextConverter->setLogger($logger);
     }
 

@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Tests;
 
-use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
-use LaunchDarkly\LDClient;
+use LaunchDarkly\Integrations;
 use LaunchDarkly\OpenFeature\Provider;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
@@ -20,18 +19,14 @@ class ProviderTest extends TestCase
 {
     public function testMetadataNameIsSetCorrectly(): void
     {
-        $client = $this->createMock(LDClient::class);
-        $provider = new Provider($client);
+        $provider = new Provider('sdk-key');
 
         $this->assertEquals("LaunchDarkly\\OpenFeature", $provider->getMetadata()->getName());
     }
 
     public function testNotProvidingContextReturnsError(): void
     {
-        $client = $this->createMock(LDClient::class);
-        $client->expects($this->never())->method($this->anything());
-
-        $provider = new Provider($client);
+        $provider = new Provider('sdk-key');
         $resolutionDetails = $provider->resolveBooleanValue("flag-key", true, null);
 
         $this->assertTrue($resolutionDetails->getValue());
@@ -45,32 +40,21 @@ class ProviderTest extends TestCase
 
     public function testEvaluationResultsAreConvertedToDetails(): void
     {
-        $detail = new EvaluationDetail(true, 1, EvaluationReason::fallthrough());
+        $td = new Integrations\TestData();
+        $td->update($td->flag('flag-key'));
 
-        $client = $this->createMock(LDClient::class);
-        $client->expects($this->once())
-            ->method('variationDetail')
-            ->willReturn($detail);
-
-        $provider = new Provider($client);
+        $provider = new Provider('sdk-key', ['feature_requester' => $td]);
         $resolutionDetails = $provider->resolveBooleanValue("flag-key", true, new EvaluationContext("user-key"));
 
         $this->assertTrue($resolutionDetails->getValue());
         $this->assertEquals(EvaluationReason::FALLTHROUGH, $resolutionDetails->getReason());
-        $this->assertEquals("1", $resolutionDetails->getVariant());
+        $this->assertEquals("0", $resolutionDetails->getVariant());
         $this->assertNull($resolutionDetails->getError());
     }
 
     public function testEvaluationErrorResultsAreConvertedCorrectly(): void
     {
-        $detail = new EvaluationDetail(true, null, EvaluationReason::error(EvaluationReason::CLIENT_NOT_READY_ERROR));
-
-        $client = $this->createMock(LDClient::class);
-        $client->expects($this->once())
-            ->method('variationDetail')
-            ->willReturn($detail);
-
-        $provider = new Provider($client);
+        $provider = new Provider('sdk-key', ['base_uri' => 'http://invalid.host:8080', 'events_uri' => 'http://invalid.host:8080']);
         $resolutionDetails = $provider->resolveBooleanValue("flag-key", true, new EvaluationContext("user-key"));
 
         $this->assertTrue($resolutionDetails->getValue());
@@ -79,19 +63,15 @@ class ProviderTest extends TestCase
 
         /** @var ResolutionError */
         $error = $resolutionDetails->getError();
-        $this->assertEquals(ErrorCode::PROVIDER_NOT_READY(), $error->getResolutionErrorCode());
+        $this->assertEquals(ErrorCode::GENERAL(), $error->getResolutionErrorCode());
     }
 
     public function testInvalidTypesGenerateTypeMismatchResults(): void
     {
-        $detail = new EvaluationDetail(true, 1, EvaluationReason::fallthrough());
+        $td = new Integrations\TestData();
+        $td->update($td->flag('flag-key'));
 
-        $client = $this->createMock(LDClient::class);
-        $client->expects($this->once())
-            ->method('variationDetail')
-            ->willReturn($detail);
-
-        $provider = new Provider($client);
+        $provider = new Provider('sdk-key', ['feature_requester' => $td]);
         $resolutionDetails = $provider->resolveStringValue("flag-key", "default-value", new EvaluationContext("user-key"));
 
         $this->assertEquals("default-value", $resolutionDetails->getValue());
@@ -138,14 +118,10 @@ class ProviderTest extends TestCase
      */
     public function testCheckMethodAndResultMatchType(mixed $defaultValue, mixed $returnValue, mixed $expectedValue, string $methodName): void
     {
-        $detail = new EvaluationDetail($returnValue, 1, EvaluationReason::fallthrough());
+        $td = new Integrations\TestData();
+        $td->update($td->flag('flag-key')->variations($defaultValue, $returnValue)->variationForAll(1));
 
-        $client = $this->createMock(LDClient::class);
-        $client->expects($this->once())
-            ->method('variationDetail')
-            ->willReturn($detail);
-
-        $provider = new Provider($client);
+        $provider = new Provider('sdk-key', ['feature_requester' => $td]);
         $resolutionDetails = $provider->{$methodName}("flag-key", $defaultValue, new EvaluationContext("user-key"));
 
         $this->assertEquals($expectedValue, $resolutionDetails->getValue());
@@ -158,14 +134,10 @@ class ProviderTest extends TestCase
             ->method('warning')
             ->with($this->equalTo("'kind' was set to non-string value; defaulting to user"));
 
-        $detail = new EvaluationDetail(true, 1, EvaluationReason::fallthrough());
+        $td = new Integrations\TestData();
+        $td->update($td->flag('flag-key'));
 
-        $client = $this->createMock(LDClient::class);
-        $client->expects($this->any())
-            ->method('variationDetail')
-            ->willReturn($detail);
-
-        $provider = new Provider($client, $logger);
+        $provider = new Provider('sdk-key', ['feature_requester' => $td, 'logger' => $logger]);
         $context = new EvaluationContext("user-key", new Attributes(['kind' => false]));
         $provider->resolveBooleanValue("flag-key", false, $context);
     }
