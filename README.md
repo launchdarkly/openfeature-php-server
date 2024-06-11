@@ -22,7 +22,7 @@ This provider is designed primarily for use in multi-user systems such as web se
 
 ## Supported PHP versions
 
-This version of the LaunchDarkly provider works with PHP 8.0 and above.
+This version of the LaunchDarkly provider works with PHP 8.1 and above.
 
 ## Getting started
 
@@ -33,7 +33,7 @@ Example composer dependencies:
 ```json
 {
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "launchdarkly/openfeature-server": "^1.0"
     }
 }
@@ -46,8 +46,7 @@ use OpenFeature\OpenFeatureAPI;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
 
-$ldClient = new LaunchDarkly\LDClient("my-sdk-key");
-$provider = new LaunchDarkly\OpenFeature\Provider($ldClient);
+$provider = new LaunchDarkly\OpenFeature\Provider("my-sdk-key");
 
 $api = OpenFeatureAPI::getInstance();
 $api->setProvider($provider);
