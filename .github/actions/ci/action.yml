@@ -4,7 +4,7 @@ inputs:
   php-version:
     description: 'Which version of PHP should we setup?'
     required: false
-    default: 8.0
+    default: 8.1
   token:
     description: 'Token used to prevent composer rate limiting'
     required: true
