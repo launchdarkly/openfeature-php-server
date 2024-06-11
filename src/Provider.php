@@ -27,6 +27,8 @@ class Provider implements OpenFeatureProvider
     private EvaluationContextConverter $contextConverter;
     private ResolutionDetailsConverter $detailsConverter;
 
+    const VERSION = '0.1.0'; // x-release-please-version
+
     /**
      * Instantiate a new instance of this provider, backed by the provided LDClient instance.
      *
@@ -36,6 +38,9 @@ class Provider implements OpenFeatureProvider
      */
     public function __construct(string $sdkKey, array $options = [])
     {
+        $options['wrapper_name'] = 'open-feature-php-server';
+        $options['wrapper_version'] = self::VERSION;
+
         $this->client = new LDClient($sdkKey, $options);
         $this->contextConverter = new EvaluationContextConverter($options['logger'] ?? new NullLogger());
         $this->detailsConverter = new ResolutionDetailsConverter();
