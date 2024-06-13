@@ -17,4 +17,4 @@ runs:
           --ignore-tags psalm-return \
           --visibility public \
           --defaultpackagename "LaunchDarkly\\OpenFeature" \
-          --title "LaunchDarkly\\OpenFeature 0.1.0" # x-release-please-version
+          --title "LaunchDarkly\\OpenFeature 1.0.0" # x-release-please-version
