@@ -14,29 +14,25 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: google-github-actions/release-please-action@v3
+      - uses: googleapis/release-please-action@v4
         id: release
-        with:
-          command: manifest
-          token: ${{ secrets.GITHUB_TOKEN }}
-          default-branch: main
 
       - uses: actions/checkout@v4
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.releases_created == 'true' }}
         with:
           fetch-depth: 0 # If you only need the current version keep this.
 
       - name: Build and Test
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.releases_created == 'true' }}
         uses: ./.github/actions/ci
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build documentation
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.releases_created == 'true' }}
         uses: ./.github/actions/build-docs
 
       - uses: ./.github/actions/publish-docs
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.releases_created == 'true' }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
