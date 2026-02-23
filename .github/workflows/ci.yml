@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # If you only need the current version keep this.
+          fetch-depth: 0
 
       - uses: ./.github/actions/ci
         with:
@@ -40,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # If you only need the current version keep this.
+          fetch-depth: 0
 
       - name: Install php support
         run: choco install -y php --version=${{ matrix.php-version }} --force
