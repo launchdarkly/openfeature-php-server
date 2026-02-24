@@ -63,7 +63,7 @@ class ProviderTest extends TestCase
 
         /** @var ResolutionError */
         $error = $resolutionDetails->getError();
-        $this->assertEquals(ErrorCode::GENERAL(), $error->getResolutionErrorCode());
+        $this->assertEquals(ErrorCode::FLAG_NOT_FOUND(), $error->getResolutionErrorCode());
     }
 
     public function testInvalidTypesGenerateTypeMismatchResults(): void
