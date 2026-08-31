@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Tests;
 
+use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Integrations;
 use LaunchDarkly\OpenFeature\Provider;
@@ -69,7 +70,7 @@ class ProviderTest extends TestCase
 
     public function testWrongTypeEvaluationErrorsAreConvertedCorrectly(): void
     {
-        $evaluation = new \LaunchDarkly\EvaluationDetail(
+        $evaluation = new EvaluationDetail(
             true,
             null,
             EvaluationReason::error(EvaluationReason::WRONG_TYPE_ERROR)
