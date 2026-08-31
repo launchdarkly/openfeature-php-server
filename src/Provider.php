@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\OpenFeature;
 
+use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\LDClient;
 use OpenFeature\implementation\provider\ResolutionDetailsBuilder;
 use OpenFeature\implementation\provider\ResolutionError;
@@ -126,20 +127,29 @@ class Provider implements OpenFeatureProvider
 
         $ldContext = $this->contextConverter->toLdContext($context);
         $result = $this->client->variationDetail($flagKey, $ldContext, $defaultValue);
+        $value = $result->getValue();
 
-        if ($flagValueType == FlagValueType::BOOLEAN && !is_bool($result->getValue())) {
+        if ($flagValueType == FlagValueType::BOOLEAN && !is_bool($value)) {
             return $this->mismatchedTypeDetails($defaultValue);
-        } elseif ($flagValueType == FlagValueType::STRING && !is_string($result->getValue())) {
+        } elseif ($flagValueType == FlagValueType::STRING && !is_string($value)) {
             return $this->mismatchedTypeDetails($defaultValue);
-        } elseif ($flagValueType == FlagValueType::INTEGER && !is_numeric($result->getValue())) {
+        } elseif ($flagValueType == FlagValueType::INTEGER && (!is_int($value) && !is_float($value))) {
             return $this->mismatchedTypeDetails($defaultValue);
-        } elseif ($flagValueType == FlagValueType::FLOAT && !is_numeric($result->getValue())) {
+        } elseif ($flagValueType == FlagValueType::FLOAT && (!is_int($value) && !is_float($value))) {
             return $this->mismatchedTypeDetails($defaultValue);
-        } elseif ($flagValueType == FlagValueType::OBJECT && !is_array($result->getValue())) {
+        } elseif ($flagValueType == FlagValueType::OBJECT && !is_array($value)) {
             return $this->mismatchedTypeDetails($defaultValue);
         }
 
-        return $this->detailsConverter->toResolutionDetails($result);
+        if ($flagValueType == FlagValueType::INTEGER) {
+            $value = (int) $value;
+        } elseif ($flagValueType == FlagValueType::FLOAT) {
+            $value = (float) $value;
+        }
+
+        $resolvedResult = new EvaluationDetail($value, $result->getVariationIndex(), $result->getReason());
+
+        return $this->detailsConverter->toResolutionDetails($resolvedResult);
     }
 
     private function mismatchedTypeDetails(mixed $defaultValue): ResolutionDetails
