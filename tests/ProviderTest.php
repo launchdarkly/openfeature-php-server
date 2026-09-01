@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Tests;
 
+use LaunchDarkly\EvaluationDetail;
 use LaunchDarkly\EvaluationReason;
 use LaunchDarkly\Integrations;
 use LaunchDarkly\OpenFeature\Provider;
+use LaunchDarkly\OpenFeature\ResolutionDetailsConverter;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
 use OpenFeature\interfaces\provider\ErrorCode;
@@ -64,6 +66,21 @@ class ProviderTest extends TestCase
         /** @var ResolutionError */
         $error = $resolutionDetails->getError();
         $this->assertEquals(ErrorCode::FLAG_NOT_FOUND(), $error->getResolutionErrorCode());
+    }
+
+    public function testWrongTypeEvaluationErrorsAreConvertedCorrectly(): void
+    {
+        $evaluation = new EvaluationDetail(
+            true,
+            null,
+            EvaluationReason::error(EvaluationReason::WRONG_TYPE_ERROR)
+        );
+        $resolutionDetails = (new ResolutionDetailsConverter())->toResolutionDetails($evaluation);
+
+        $this->assertEquals(Reason::ERROR, $resolutionDetails->getReason());
+        /** @var ResolutionError */
+        $error = $resolutionDetails->getError();
+        $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $error->getResolutionErrorCode());
     }
 
     public function testInvalidTypesGenerateTypeMismatchResults(): void

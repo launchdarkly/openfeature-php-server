@@ -70,6 +70,8 @@ class ResolutionDetailsConverter
                 return new ResolutionError(ErrorCode::PARSE_ERROR());
             case EvaluationReason::USER_NOT_SPECIFIED_ERROR:
                 return new ResolutionError(ErrorCode::TARGETING_KEY_MISSING());
+            case EvaluationReason::WRONG_TYPE_ERROR:
+                return new ResolutionError(ErrorCode::TYPE_MISMATCH());
             case EvaluationReason::EXCEPTION_ERROR:
                 // intentional fallthrough
             default:
