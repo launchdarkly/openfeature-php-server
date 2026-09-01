@@ -118,10 +118,13 @@ class ProviderTest extends TestCase
             [1, true, 1, 'resolveIntegerValue'],
             [1, false, 1, 'resolveIntegerValue'],
             [1, "", 1, 'resolveIntegerValue'],
+            [1, "5", 1, 'resolveIntegerValue'],
+            [1, 2.5, 2, 'resolveIntegerValue'],
 
             [1.0, 2.0, 2.0, 'resolveFloatValue'],
             [1.0, 2, 2.0, 'resolveFloatValue'],
             [1.0, true, 1.0, 'resolveFloatValue'],
+            [1.0, "5", 1.0, 'resolveFloatValue'],
 
             [['default-value'], ['return-string'], ['return-string'], 'resolveObjectValue'],
             [['default-value'], true, ['default-value'], 'resolveObjectValue'],
@@ -141,7 +144,24 @@ class ProviderTest extends TestCase
         $provider = new Provider('sdk-key', ['feature_requester' => $td]);
         $resolutionDetails = $provider->{$methodName}("flag-key", $defaultValue, new EvaluationContext("user-key"));
 
-        $this->assertEquals($expectedValue, $resolutionDetails->getValue());
+        $this->assertSame($expectedValue, $resolutionDetails->getValue());
+    }
+
+    public function testNumericStringsGenerateTypeMismatchErrors(): void
+    {
+        $td = new Integrations\TestData();
+        $td->update($td->flag('flag-key')->valueForAll("5"));
+
+        $provider = new Provider('sdk-key', ['feature_requester' => $td]);
+        $integerDetails = $provider->resolveIntegerValue("flag-key", 1, new EvaluationContext("user-key"));
+        $floatDetails = $provider->resolveFloatValue("flag-key", 1.0, new EvaluationContext("user-key"));
+
+        /** @var ResolutionError */
+        $integerError = $integerDetails->getError();
+        /** @var ResolutionError */
+        $floatError = $floatDetails->getError();
+        $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $integerError->getResolutionErrorCode());
+        $this->assertEquals(ErrorCode::TYPE_MISMATCH(), $floatError->getResolutionErrorCode());
     }
 
     public function testLoggerChangesShouldCascadeToEvaluationConverter(): void
