@@ -156,6 +156,23 @@ class EvaluationContextConverterTest extends TestCase
         $this->assertEquals("Org name", $orgContext->getName());
     }
 
+    public function testMultiContextTargetingKeyIsNotAddedAsAnAttribute(): void
+    {
+        $attributes = [
+            'kind' => 'multi',
+            'user' => ['targetingKey' => 'user-key', 'name' => 'User name']
+        ];
+        $context = new EvaluationContext(null, new Attributes($attributes));
+
+        $ldContext = $this->contextConverter->toLdContext($context);
+
+        /** @var \LaunchDarkly\LDContext */
+        $userContext = $ldContext->getIndividualContext("user");
+        $this->assertEquals("user-key", $userContext->getKey());
+        $contextJson = $userContext->jsonSerialize();
+        $this->assertArrayNotHasKey("targetingKey", $contextJson);
+    }
+
     public function testMultiContextDiscardsInvalidSingleKind(): void
     {
         $attributes = [

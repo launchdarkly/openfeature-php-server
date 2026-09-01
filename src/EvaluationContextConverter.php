@@ -131,7 +131,7 @@ class EvaluationContextConverter
 
         foreach ($attributes as $k => $v) {
             // Key has been processed, so we can skip it.
-            if ($k === "key" || $key === "targetingKey") {
+            if ($k === "key" || $k === "targetingKey") {
                 continue;
             }
 
