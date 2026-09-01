@@ -18,6 +18,28 @@ This provider is designed primarily for use in multi-user systems such as web se
 
 This version of the LaunchDarkly provider works with PHP 8.1 and above.
 
+## Feature matrix
+
+This matrix mirrors the [feature matrix of the OpenFeature SDK for PHP](https://github.com/open-feature/php-sdk#-features) and describes what this provider supports. Rows which are not supported state whether the limitation comes from the OpenFeature PHP SDK or from the provider.
+
+| Status | Feature                         | Notes                                                                                                                                                                                                            |
+|--------|---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ✅      | Providers                       | Evaluates boolean, string, integer, float, and object flags through the LaunchDarkly PHP SDK.                                                                                                                     |
+| ✅      | Targeting                       | The `EvaluationContext` is converted to a LaunchDarkly single or multi-context. See [OpenFeature Specific Considerations](#openfeature-specific-considerations).                                                  |
+| ✅      | Hooks                           | Hooks are registered on the OpenFeature API and client; the provider requires no additional support and its results are visible to hooks. The provider contributes no hooks of its own.                            |
+| ✅      | Logging                         | The provider accepts a PSR-3 logger through the `logger` option, and `setLogger` replaces the logger used for context conversion. The logger of the underlying LaunchDarkly client is set through the `logger` option. |
+| ✅      | MultiProvider                   | The provider can be one of the providers given to the OpenFeature SDK's `MultiProvider`; no provider support is required.                                                                                          |
+| ✅      | Extending                       | The provider is constructed with an SDK key and the options of the underlying LaunchDarkly client, so LaunchDarkly features outside OpenFeature remain available through a separately constructed `LDClient`.     |
+| ❌      | Named clients                   | Not supported — not available in the OpenFeature PHP SDK, which holds a single provider for the whole API ([php-sdk#93](https://github.com/open-feature/php-sdk/issues/93)).                                       |
+| ❌      | Eventing                        | Not supported — not available in the OpenFeature PHP SDK ([php-sdk#93](https://github.com/open-feature/php-sdk/issues/93)). The PHP provider is also request-scoped and holds no streaming data source to report on. |
+| ❌      | Initialization                  | Not supported — the OpenFeature PHP SDK provider interface has no initialization method, so there is nothing for the provider to implement or to bound with a timeout.                                             |
+| ❌      | Shutdown                        | Not supported — not available in the OpenFeature PHP SDK ([php-sdk#93](https://github.com/open-feature/php-sdk/issues/93)).                                                                                       |
+| ❌      | Tracking                        | Not supported — the OpenFeature PHP SDK provider interface has no `track` method. LaunchDarkly custom events can be sent through an `LDClient` directly.                                                          |
+| ❌      | Transaction Context Propagation | Not supported — not available in the OpenFeature PHP SDK, which has no transaction context.                                                                                                                       |
+| ❌      | Flag metadata                   | Not supported — not available in the OpenFeature PHP SDK, whose `EvaluationDetails` and `ResolutionDetails` carry no flag metadata, so LaunchDarkly evaluation reason details cannot be surfaced.                 |
+
+<sub>Supported: ✅ | Partially supported: ⚠️ | Not supported: ❌</sub>
+
 ## Getting started
 
 ### Requisites
