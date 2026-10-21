@@ -3,6 +3,23 @@
 All notable changes to the LaunchDarkly OpenFeature provider for the Server-Side SDK for PHP will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
 
+## [2.0.0](https://github.com/launchdarkly/openfeature-php-server/compare/1.0.0...2.0.0) (2026-10-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* Do not add the targeting key as a custom attribute ([#28](https://github.com/launchdarkly/openfeature-php-server/issues/28))
+
+### Features
+
+* Require PHP 8.2 or later ([#32](https://github.com/launchdarkly/openfeature-php-server/issues/32)) ([50c99d1](https://github.com/launchdarkly/openfeature-php-server/commit/50c99d1151be6af79648a74205d18d14e8ada4e2))
+
+
+### Bug Fixes
+
+* Do not add the targeting key as a custom attribute ([#28](https://github.com/launchdarkly/openfeature-php-server/issues/28)) ([2fb07d1](https://github.com/launchdarkly/openfeature-php-server/commit/2fb07d1ba4ce8140615aa92f4888e1968a0d7549))
+* Map the WRONG_TYPE error kind to TYPE_MISMATCH ([#27](https://github.com/launchdarkly/openfeature-php-server/issues/27)) ([481eb3c](https://github.com/launchdarkly/openfeature-php-server/commit/481eb3cd17de6a4abfabb451b992796e54010266))
+
 ## [1.0.0](https://github.com/launchdarkly/openfeature-php-server/compare/0.1.0...1.0.0) (2024-06-13)
 
 
