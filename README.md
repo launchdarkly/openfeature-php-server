@@ -16,7 +16,7 @@ This provider is designed primarily for use in multi-user systems such as web se
 
 ## Supported PHP versions
 
-This version of the LaunchDarkly provider works with PHP 8.1 and above.
+This version of the LaunchDarkly provider works with PHP 8.2 and above.
 
 ## Feature matrix
 
@@ -49,7 +49,7 @@ Example composer dependencies:
 ```json
 {
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "launchdarkly/openfeature-server": "^1.0"
     }
 }

@@ -15,7 +15,7 @@ jobs:
 
     strategy:
       matrix:
-        php-versions: [8.1, 8.2, 8.3]
+        php-version: ["8.2", "8.3", "8.4"]
 
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
 
     strategy:
       matrix:
-        php-version: [8.1.26, 8.2.19, 8.3.8]
+        php-version: ["8.2", "8.3", "8.4"]
 
     env:
       LD_INCLUDE_INTEGRATION_TESTS: 1
@@ -38,11 +38,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install php support
-        run: choco install -y php --version=${{ matrix.php-version }} --force
-
-      - name: Install composer
-        run: choco install -y composer
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: ${{ matrix.php-version }}
 
       # Installation must prefer source as the current open-feature/php-sdk
       # includes a symlink which 7z does not want to unzip. Once this is
