@@ -22,7 +22,7 @@
     "require": {
         "php": ">=8.2",
         "guzzlehttp/guzzle": "^7",
-        "launchdarkly/server-sdk": "^6.2",
+        "launchdarkly/server-sdk": "^6.4",
         "myclabs/php-enum": ">1.8",
         "open-feature/sdk": "^2.4"
     },
