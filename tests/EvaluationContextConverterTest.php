@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace LaunchDarkly\Tests;
 
+use DateTime;
+use DateTimeImmutable;
+use DateTimeZone;
 use LaunchDarkly\OpenFeature\EvaluationContextConverter;
 use OpenFeature\implementation\flags\Attributes;
 use OpenFeature\implementation\flags\EvaluationContext;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
 class EvaluationContextConverterTest extends TestCase
@@ -207,5 +211,51 @@ class EvaluationContextConverterTest extends TestCase
 
         $this->assertFalse($ldContext->isValid());
         $this->assertEquals(0, $ldContext->getIndividualContextCount());
+    }
+
+    public function testDateAttributesAreConvertedToUtcIso8601Strings(): void
+    {
+        $attributes = new Attributes([
+            'signupDate' => new DateTime('2024-03-01T09:30:00.123+09:00'),
+            'address' => ['movedIn' => new DateTimeImmutable('2024-03-01T00:00:00', new DateTimeZone('UTC'))],
+            'history' => [new DateTimeImmutable('2023-12-31T23:00:00-01:00'), 'other'],
+        ]);
+        $context = new EvaluationContext('user-key', $attributes);
+
+        $ldContext = $this->contextConverter->toLdContext($context);
+
+        $this->assertTrue($ldContext->isValid());
+        $this->assertSame('2024-03-01T00:30:00.123Z', $ldContext->get('signupDate'));
+        $this->assertSame(['movedIn' => '2024-03-01T00:00:00.000Z'], $ldContext->get('address'));
+        $this->assertSame(['2024-01-01T00:00:00.000Z', 'other'], $ldContext->get('history'));
+    }
+
+    public function testMultiContextDateAttributesAreConverted(): void
+    {
+        $attributes = new Attributes([
+            'kind' => 'multi',
+            'org' => ['key' => 'org-key', 'founded' => new DateTimeImmutable('2001-02-03T04:05:06Z')],
+        ]);
+        $context = new EvaluationContext(null, $attributes);
+
+        $ldContext = $this->contextConverter->toLdContext($context);
+
+        /** @var \LaunchDarkly\LDContext */
+        $orgContext = $ldContext->getIndividualContext('org');
+        $this->assertSame('2001-02-03T04:05:06.000Z', $orgContext->get('founded'));
+    }
+
+    public function testUnconvertibleValuesBecomeNullAndLogAnError(): void
+    {
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->once())->method('error');
+        $converter = new EvaluationContextConverter($logger);
+
+        $attributes = new Attributes(['list' => ['valid', new \stdClass()]]);
+        $context = new EvaluationContext('user-key', $attributes);
+
+        $ldContext = $converter->toLdContext($context);
+
+        $this->assertSame(['valid', null], $ldContext->get('list'));
     }
 }

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace LaunchDarkly\OpenFeature;
 
 use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
+use DateTimeZone;
 use LaunchDarkly\LDContext;
 use LaunchDarkly\LDContextBuilder;
 use LaunchDarkly\LDContextMultiBuilder;
@@ -157,10 +160,39 @@ class EvaluationContextConverter
                 $this->logger->error("'privateAttributes' in an evaluation context must be an array");
             } else {
                 // Catch all for remaining attributes
-                $builder->set($k, $v);
+                $builder->set((string) $k, $this->toLdValue($v, (string) $k));
             }
         }
 
         return $builder->build();
+    }
+
+    /**
+     * Convert an OpenFeature attribute value into a value the LaunchDarkly
+     * context model can hold. Dates become ISO-8601 strings in UTC, which
+     * the LaunchDarkly date operators accept.
+     */
+    private function toLdValue(mixed $value, string $attributeName): mixed
+    {
+        if ($value === null || is_bool($value) || is_int($value) || is_float($value) || is_string($value)) {
+            return $value;
+        }
+
+        if ($value instanceof DateTimeInterface) {
+            return DateTimeImmutable::createFromInterface($value)
+                ->setTimezone(new DateTimeZone('UTC'))
+                ->format('Y-m-d\\TH:i:s.v\\Z');
+        }
+
+        if (is_array($value)) {
+            $converted = [];
+            foreach ($value as $k => $v) {
+                $converted[$k] = $this->toLdValue($v, $attributeName);
+            }
+            return $converted;
+        }
+
+        $this->logger->error("The attribute '$attributeName' contained a value which could not be converted; using null");
+        return null;
     }
 }
