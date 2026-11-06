@@ -36,7 +36,47 @@ class ResolutionDetailsConverter
             $builder->withVariant(strval($variationIndex));
         }
 
+        $builder->withMetadata(self::toFlagMetadata($variationIndex, $reason));
+
         return $builder->build();
+    }
+
+    /**
+     * The LaunchDarkly specific parts of an evaluation result which have no
+     * OpenFeature equivalent. Each entry is absent when it does not apply.
+     *
+     * @return array<string,bool|string|int|float>
+     */
+    private static function toFlagMetadata(?int $variationIndex, EvaluationReason $reason): array
+    {
+        $metadata = [];
+
+        if ($variationIndex !== null) {
+            $metadata['variationIndex'] = $variationIndex;
+        }
+
+        if ($reason->isInExperiment()) {
+            $metadata['inExperiment'] = true;
+        }
+
+        if ($reason->getRuleIndex() !== null) {
+            $metadata['ruleIndex'] = $reason->getRuleIndex();
+        }
+
+        if ($reason->getRuleId() !== null) {
+            $metadata['ruleId'] = $reason->getRuleId();
+        }
+
+        if ($reason->getPrerequisiteKey() !== null) {
+            $metadata['prerequisiteKey'] = $reason->getPrerequisiteKey();
+        }
+
+        $bigSegmentsStatus = $reason->bigSegmentsEvaluationStatus();
+        if ($bigSegmentsStatus !== null) {
+            $metadata['bigSegmentsStatus'] = $bigSegmentsStatus->value;
+        }
+
+        return $metadata;
     }
 
     private static function kindToString(string $kind): string

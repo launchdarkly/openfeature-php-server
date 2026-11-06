@@ -36,7 +36,7 @@ This matrix mirrors the [feature matrix of the OpenFeature SDK for PHP](https://
 | ❌      | Shutdown                        | Not supported — not available in the OpenFeature PHP SDK ([php-sdk#93](https://github.com/open-feature/php-sdk/issues/93)).                                                                                       |
 | ❌      | Tracking                        | Not supported — the OpenFeature PHP SDK provider interface has no `track` method. LaunchDarkly custom events can be sent through an `LDClient` directly.                                                          |
 | ❌      | Transaction Context Propagation | Not supported — not available in the OpenFeature PHP SDK, which has no transaction context.                                                                                                                       |
-| ❌      | Flag metadata                   | Not supported — not available in the OpenFeature PHP SDK, whose `EvaluationDetails` and `ResolutionDetails` carry no flag metadata, so LaunchDarkly evaluation reason details cannot be surfaced.                 |
+| ✅      | Flag metadata                   | LaunchDarkly evaluation reason details are returned as OpenFeature flag metadata. Requires OpenFeature PHP SDK 2.4.0 or later. See [Flag Metadata](#flag-metadata).                                                |
 
 <sub>Supported: ✅ | Partially supported: ⚠️ | Not supported: ❌</sub>
 
@@ -160,6 +160,24 @@ $attributes = [
 ];
 
 $context = new EvaluationContext(null, new Attributes($attributes));
+```
+
+### Flag Metadata
+
+Evaluations include flag metadata for the LaunchDarkly specific parts of the evaluation result which have no OpenFeature equivalent. Each entry is absent when it does not apply to the evaluation.
+
+| Key                 | Type    | Description                                                        |
+|---------------------|---------|--------------------------------------------------------------------|
+| `variationIndex`    | integer | The index of the returned variation. Absent for default values.    |
+| `inExperiment`      | boolean | Present, and `true`, when the evaluation was part of an experiment. |
+| `ruleIndex`         | integer | The index of the rule that matched.                                |
+| `ruleId`            | string  | The identifier of the rule that matched.                           |
+| `prerequisiteKey`   | string  | The key of the prerequisite flag that failed.                      |
+| `bigSegmentsStatus` | string  | The status of the Big Segments query made during the evaluation.   |
+
+```php
+$details = $client->getBooleanDetails("my-flag", false, $context);
+$inExperiment = $details->getMetadata()["inExperiment"] ?? false;
 ```
 
 ## Learn more
