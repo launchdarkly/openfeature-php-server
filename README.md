@@ -50,7 +50,7 @@ Example composer dependencies:
 {
     "require": {
         "php": ">=8.2",
-        "launchdarkly/openfeature-server": "^1.0"
+        "launchdarkly/openfeature-server": "^2.0"
     }
 }
 ```
