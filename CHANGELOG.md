@@ -3,6 +3,18 @@
 All notable changes to the LaunchDarkly OpenFeature provider for the Server-Side SDK for PHP will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
 
+## [2.1.0](https://github.com/launchdarkly/openfeature-php-server/compare/2.0.0...2.1.0) (2026-11-06)
+
+
+### Features
+
+* Populate OpenFeature flag metadata from the LaunchDarkly evaluation reason ([#33](https://github.com/launchdarkly/openfeature-php-server/issues/33)) ([4f6c7c8](https://github.com/launchdarkly/openfeature-php-server/commit/4f6c7c897f8f21a5a24d783c90c2734a52143b25))
+
+
+### Bug Fixes
+
+* Convert date attributes to ISO-8601 strings in UTC ([#34](https://github.com/launchdarkly/openfeature-php-server/issues/34)) ([05d840f](https://github.com/launchdarkly/openfeature-php-server/commit/05d840f8bd4d56b712ac36bf1aeb5a235a9e3615))
+
 ## [2.0.0](https://github.com/launchdarkly/openfeature-php-server/compare/1.0.0...2.0.0) (2026-10-21)
 
 
