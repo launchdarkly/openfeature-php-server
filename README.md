@@ -50,7 +50,7 @@ Example composer dependencies:
 {
     "require": {
         "php": ">=8.2",
-        "launchdarkly/openfeature-server": "^1.0"
+        "launchdarkly/openfeature-server": "^2.1"
     }
 }
 ```
@@ -115,12 +115,12 @@ $attributes = [
     "kind" => "multi",
     "organization" => [
         "name" => "the-org-name",
-        "targetingKey", "my-org-key",
-        "myCustomAttribute", "myAttributeValue"
+        "targetingKey" => "my-org-key",
+        "myCustomAttribute" => "myAttributeValue",
     ],
     "user" => [
         "key" => "my-user-key",
-        "anonymous", true
+        "anonymous" => true,
     ]
 ];
 $context = new EvaluationContext(null, new Attributes($attributes));
@@ -142,7 +142,7 @@ $context = new EvaluationContext("org-key", new Attributes($attributes));
 
 ```php
 $attributes = [
-    "kind" => "organization",
+    "kind" => "multi",
     "organization" => [
         "name" => "the-org-name",
         "targetingKey" => "my-org-key",
@@ -153,7 +153,7 @@ $attributes = [
     ],
     "user" => [
         "key" => "my-user-key",
-        "anonymous" = > true,
+        "anonymous" => true,
         // This attribute will not be private.
         "myCustomAttribute" => "myAttributeValue",
     ]
