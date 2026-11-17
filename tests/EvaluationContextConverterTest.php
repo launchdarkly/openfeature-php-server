@@ -177,6 +177,31 @@ class EvaluationContextConverterTest extends TestCase
         $this->assertArrayNotHasKey("targetingKey", $contextJson);
     }
 
+    public function testMultiContextIgnoresNestedKindAttribute(): void
+    {
+        $attributes = [
+            'kind' => 'multi',
+            'org' => ['key' => 'org-key', 'kind' => 'user'],
+            'user' => ['key' => 'user-key']
+        ];
+        $context = new EvaluationContext(null, new Attributes($attributes));
+
+        $ldContext = $this->contextConverter->toLdContext($context);
+
+        $this->assertTrue($ldContext->isValid());
+        $this->assertEquals(2, $ldContext->getIndividualContextCount());
+
+        /** @var \LaunchDarkly\LDContext */
+        $orgContext = $ldContext->getIndividualContext("org");
+        $this->assertEquals("org", $orgContext->getKind());
+        $this->assertEquals("org-key", $orgContext->getKey());
+
+        /** @var \LaunchDarkly\LDContext */
+        $userContext = $ldContext->getIndividualContext("user");
+        $this->assertEquals("user", $userContext->getKind());
+        $this->assertEquals("user-key", $userContext->getKey());
+    }
+
     public function testMultiContextDiscardsInvalidSingleKind(): void
     {
         $attributes = [
