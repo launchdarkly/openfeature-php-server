@@ -16,7 +16,7 @@ This provider is designed primarily for use in multi-user systems such as web se
 
 ## Supported PHP versions
 
-This version of the LaunchDarkly provider works with PHP 8.2 and above.
+While this version of the LaunchDarkly provider requires PHP 8.2 or later, you should use the latest patched version of a supported PHP release.
 
 ## Feature matrix
 
