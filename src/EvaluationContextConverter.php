@@ -80,9 +80,10 @@ class EvaluationContextConverter
             $this->logger->warning("A non-string 'key' attribute was provided.");
         }
 
-        if ($key !== null && is_string($key)) {
-            // Targeting key takes precedence over key, because targeting key is in the spec.
-            $targetingKey = $targetingKey ?: $key;
+        // Targeting key takes precedence over key, because targeting key is in the spec.
+        // Compare against "" explicitly, because "0" is falsy in PHP but is a valid key.
+        if (($targetingKey === null || $targetingKey === "") && is_string($key)) {
+            $targetingKey = $key;
         }
 
         if ($targetingKey === null || $targetingKey === "") {

@@ -58,6 +58,34 @@ class EvaluationContextConverterTest extends TestCase
         $this->assertEquals("should-use", $ldContext->getKey());
     }
 
+    public function testZeroTargetingKeyTakesPrecedenceOverAttributeKey(): void
+    {
+        $attributes = new Attributes(["key" => "do-not-use"]);
+        $context = new EvaluationContext("0", $attributes);
+
+        $ldContext = $this->contextConverter->toLdContext($context);
+
+        $this->assertTrue($ldContext->isValid());
+        $this->assertEquals("0", $ldContext->getKey());
+    }
+
+    public function testZeroTargetingKeyTakesPrecedenceOverAttributeKeyInMultiContext(): void
+    {
+        $attributes = [
+            'kind' => 'multi',
+            'user' => ['targetingKey' => '0', 'key' => 'do-not-use'],
+        ];
+        $context = new EvaluationContext(null, new Attributes($attributes));
+
+        $ldContext = $this->contextConverter->toLdContext($context);
+
+        $this->assertTrue($ldContext->isValid());
+
+        /** @var \LaunchDarkly\LDContext */
+        $userContext = $ldContext->getIndividualContext("user");
+        $this->assertEquals("0", $userContext->getKey());
+    }
+
     public function testCreateContextWithKeyAndKind(): void
     {
         $attributes = new Attributes(["kind" => "org"]);
