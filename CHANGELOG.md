@@ -3,6 +3,13 @@
 All notable changes to the LaunchDarkly OpenFeature provider for the Server-Side SDK for PHP will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org).
 
 
+## [2.1.2](https://github.com/launchdarkly/openfeature-php-server/compare/2.1.1...2.1.2) (2026-11-23)
+
+
+### Bug Fixes
+
+* Prefer a targeting key of "0" over the key attribute ([#44](https://github.com/launchdarkly/openfeature-php-server/issues/44)) ([68554ef](https://github.com/launchdarkly/openfeature-php-server/commit/68554eff24b6e23ec6233e91f53ab2cafb9d413c))
+
 ## [2.1.1](https://github.com/launchdarkly/openfeature-php-server/compare/2.1.0...2.1.1) (2026-11-12)
 
 
