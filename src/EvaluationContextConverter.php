@@ -134,8 +134,10 @@ class EvaluationContextConverter
         $builder->kind($kind);
 
         foreach ($attributes as $k => $v) {
-            // Key has been processed, so we can skip it.
-            if ($k === "key" || $k === "targetingKey") {
+            // Key and kind have been processed, so we can skip them. Setting
+            // "kind" through the catch-all would replace the kind given to
+            // this method, because the builder treats it as the context kind.
+            if ($k === "key" || $k === "targetingKey" || $k === "kind") {
                 continue;
             }
 
